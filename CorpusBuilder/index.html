@@ -1,0 +1,142 @@
+<html>
+<?php
+    // Allow CORS
+header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Credentials: false');    
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+?>
+
+    <head>
+        <script>
+            var i = 0;
+            var AllArticles = [];
+            var currentIndex = 0;
+            var hrefArray = new Array();
+
+            function formatDate(date) {
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            }
+            getlinks = function(link) {
+                var requestforlink = new XMLHttpRequest();
+                requestforlink.onreadystatechange = function() {
+                    if (requestforlink.readyState == XMLHttpRequest.DONE) {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(requestforlink.responseText, "text/html");
+                        contents = doc.getElementsByClassName('link_overlay');
+                        if (contents.length > 0) {
+                            for (j = 0; j < contents.length; j++) {
+                                var ret = contents[j].href.replace('http://samspark1-001-site1.etempurl.com', 'http://www.prothom-alo.com');
+                                var ret = contents[j].href.replace('file///C:', 'http://www.prothom-alo.com');
+                                hrefArray.push(contents[j].href);
+                            }
+                            i++;
+                            document.getElementById("StatusLabel").innerHTML = "Found " + hrefArray.length + " URL So Far!!";
+                            getlinks('http://www.prothom-alo.com/archive/' + formatDate(document.getElementById('dateforinit').value) + '?page=' + i);
+                        } else {
+                            document.getElementById("StatusLabel").innerHTML = "Found " + hrefArray.length + " URLs";
+                            fetchArticles();
+                        }
+                    }
+                }
+                requestforlink.open('GET', link, true);
+                requestforlink.send();
+            }
+
+            function ErrorListener() {
+                fetchArticles();
+            }
+
+            fetchArticles = function() {
+                var ret = hrefArray[currentIndex].replace('http://samspark1-001-site1.etempurl.com', '');
+                var ret = hrefArray[currentIndex].replace('file:///C:', '');
+                var xhttp = new XMLHttpRequest();
+                xhttp.timeout = 30000;
+                xhttp.open('GET', "http://www.prothom-alo.com" + ret, true);
+                xhttp.send();
+                xhttp.addEventListener("error", ErrorListener);
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState === XMLHttpRequest.DONE && xhttp.status === 200) {
+                        var parser = new DOMParser()
+                        var doc = parser.parseFromString(xhttp.responseText, "text/html");
+                        var parts = ret.split("/");
+                        var articles;
+                        var elems = doc.getElementsByTagName("p");
+                        for (k = 0; k < elems.length; k++) {
+                            articles += elems[k].innerText;
+                        }
+                        var category = parts[1];
+                        var obj = {};
+                        obj.category = category;
+                        articles = articles.replace("undefined", "");
+                        articles = articles.replace("Prothom Alo is the highest circulated and most read newspaper in Bangladesh. The online portal of Prothom Alo is the most visited Bangladeshi and Bengali website in the world.", "");
+                        articles = articles.replace("Privacy Policy | Terms of Use", "");
+                        articles = articles.replace("\t", " ");
+                        articles = articles.replace("\n\r", " ");
+                        articles = articles.replace("\r\n", " ");
+                        articles = articles.replace("\n", " ");
+
+                        obj.article = articles;
+                        AllArticles.push(obj);
+                        if (currentIndex < (hrefArray.length - 1)) {
+                            document.getElementById("StatusLabel").innerHTML = "Fetched " + currentIndex + " Articles Out of " + hrefArray.length;
+                            currentIndex++;
+                            fetchArticles();
+                        } else {
+                            document.getElementById("StatusLabel").innerHTML = "ALL Articles has been downloaded";
+                            document.getElementById("jsonToShow").innerHTML = JSON.stringify(AllArticles, null, 4);
+                        }
+                    }
+                    //else{
+                    //document.getElementById("StatusLabel").innerHTML = "Retrying for Article number  "+currentIndex+" Out of "+hrefArray.length;
+                    //fetchArticles();
+                    //}
+                }
+                xhttp.ontimeout = function(e) {
+                    fetchArticles()
+                };
+            }
+            downloadASJSON = function() {
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(AllArticles, null, 4));
+                var dlAnchorElem = document.getElementById('downloadAnchorElem');
+                dlAnchorElem.setAttribute("href", dataStr);
+                dlAnchorElem.setAttribute("download", "data" + formatDate(document.getElementById('dateforinit').value) + ".json");
+                dlAnchorElem.click();
+            }
+        </script>
+    </head>
+
+    <body style="padding-top:20px;">
+
+        <div style="text-align:center;">
+            <h1>Bangla Corpus Dataset Builder</h1>
+        </div>
+        <div style="text-align:center;">
+            <h3>Select a date to fetch all articles from prothom alo by that date</h3>
+        </div>
+        <div style="text-align:center;padding-top:20px;">
+            <input type="date" id="dateforinit" />
+            <button onclick="getlinks('http://www.prothom-alo.com/archive/' + formatDate(document.getElementById('dateforinit').value) + '?page=0')">Fetch</button>
+            <br>
+            <label id='dateLabel'></label>
+        </div>
+        <div style="text-align:center;padding-top:20px;">
+            <label id="StatusLabel"></label>
+        </div>
+        <div style="text-align:center;padding-top:20px;">
+            <textarea rows="20" cols="80" id="jsonToShow">
+
+</textarea>
+        </div>
+        <div style="text-align:center;padding-top:20px;">
+            <button onclick="downloadASJSON();">DOWNLOAD AS JSON FILE</button>
+            <a id="downloadAnchorElem" style="display:none"></a>
+        </div>
+    </body>
+
+</html>
