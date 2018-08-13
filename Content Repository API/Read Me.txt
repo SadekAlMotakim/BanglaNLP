@@ -1,0 +1,24 @@
+This API Was made to store bangla contents and their corresponding category in a sql server database 
+and to fetch all stored contents from the database.
+
+
+we have provided 
+1.The sql query to create the sql server database with supported schema in the file "ContentCategorizationRepositoryDB.sql"
+2.A file named "Sample API Input.json" with sample input that the api takes to store the contents in the database
+
+
+
+sample api calls 
+
+1. For storing contents 
+POST REQUEST 
+http://localhost/addtodatarepository
+
+2. For Getting All Stored Contents
+GET Request
+http://localhost/getdatafromrepository
+
+3. For Getting Contents of specific Categories only
+GET REQUEST
+http://localhost/getdatafromrepositorybycategory?categories='technology','entertainment'
+
