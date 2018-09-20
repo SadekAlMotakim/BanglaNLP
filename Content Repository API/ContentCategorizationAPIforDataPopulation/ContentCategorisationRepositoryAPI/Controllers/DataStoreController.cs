@@ -1,4 +1,5 @@
 ﻿using ContentCategorisationRepositoryAPI.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -91,6 +92,36 @@ namespace ContentCategorisationRepositoryAPI.Controllers
                 }
             }
             return Ok(Articles);
+        }
+
+        [HttpGet]
+        [Route("getdatafromoldDB")]
+        public IHttpActionResult getdatafromoldDB()
+        {
+            List<Articles> Articles = new List<Articles>();
+            string connectionString = "Data Source=.;initial catalog=SentimentAnalysisRepositoryWorking; User ID=sa;Password=categorise;Integrated Security=SSPI;";
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand($"select * from articles", con))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Articles.Add(new Models.Articles
+                            {
+                                category = reader["category"].ToString(),
+                                article = Encoding.Unicode.GetString((byte[])reader["ArticleContent"])
+                            }); //Specify column index 
+                        }
+                    }
+                }
+            }
+            string json = JsonConvert.SerializeObject(Articles.ToArray(),Formatting.Indented);
+            //write string to file
+            System.IO.File.WriteAllText(@"D:\CorpusData.Json", json);
+            return Ok("Success");
         }
     }
 }
