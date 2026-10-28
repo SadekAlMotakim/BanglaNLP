@@ -1,0 +1,72 @@
+{
+  "raw_articles": 19838,
+  "empty_removed": 1,
+  "conflicting_label_texts_removed": 3,
+  "exact_duplicates_removed": 1377,
+  "near_duplicates_removed": 126,
+  "clean_articles": 18320,
+  "clean_category_counts": {
+    "bangladesh": 8635,
+    "sports": 1856,
+    "international": 1384,
+    "entertainment": 1281,
+    "northamerica": 985,
+    "economy": 864,
+    "opinion": 796,
+    "life-style": 627,
+    "durporobash": 497,
+    "technology": 457,
+    "trust": 278,
+    "roshalo": 150,
+    "pachmisheli": 141,
+    "art-and-literature": 115,
+    "education": 94,
+    "bondhushava": 75,
+    "we-are": 68,
+    "protichinta": 16,
+    "kishoralo": 1
+  },
+  "all_sections_task_classes": [
+    "art-and-literature",
+    "bangladesh",
+    "bondhushava",
+    "durporobash",
+    "economy",
+    "education",
+    "entertainment",
+    "international",
+    "life-style",
+    "northamerica",
+    "opinion",
+    "pachmisheli",
+    "roshalo",
+    "sports",
+    "technology",
+    "trust",
+    "we-are"
+  ],
+  "split_sizes": {
+    "5class": {
+      "train": 4089,
+      "dev": 584,
+      "test": 1169
+    },
+    "17class": {
+      "train": 12812,
+      "dev": 1830,
+      "test": 3661
+    }
+  },
+  "leakage_check_5fold_cv": {
+    "raw_with_duplicates": {
+      "n": 6354,
+      "accuracy": 97.86,
+      "macro_f1": 96.9
+    },
+    "cleaned": {
+      "n": 5842,
+      "accuracy": 97.42,
+      "macro_f1": 96.31
+    }
+  }
+}

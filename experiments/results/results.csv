@@ -1,0 +1,13 @@
+task,model,split,accuracy,macro_f1
+5class,tfidf_word_LR,dev,97.6,95.84
+5class,tfidf_word_LR,test,96.75,95.7
+5class,tfidf_word12_LinearSVC,dev,97.95,96.3
+5class,tfidf_word12_LinearSVC,test,96.83,95.73
+5class,tfidf_char2-5_LinearSVC,dev,97.26,95.58
+5class,tfidf_char2-5_LinearSVC,test,97.18,96.04
+17class,tfidf_word_LR,dev,89.23,67.96
+17class,tfidf_word_LR,test,90.19,73.25
+17class,tfidf_word12_LinearSVC,dev,89.18,67.48
+17class,tfidf_word12_LinearSVC,test,90.0,71.68
+17class,tfidf_char2-5_LinearSVC,dev,90.6,71.08
+17class,tfidf_char2-5_LinearSVC,test,91.18,75.33
